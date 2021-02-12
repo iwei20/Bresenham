@@ -11,3 +11,4 @@ $(name).out: $(name).cpp
 
 clean:
 	rm $(name).out
+	rm $(name).ppm
