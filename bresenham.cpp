@@ -134,7 +134,7 @@ void drawLine(std::tuple<short, short, short> (&colorData)[rows][cols], std::pai
 }
 
 int main() {
-    std::ofstream fout("line.ppm");
+    std::ofstream fout("bresenham.ppm");
     const int XRES = 512;
     const int YRES = 512;
     std::tuple<short, short, short> color = {0, 255, 0};
