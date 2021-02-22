@@ -24,9 +24,9 @@ void write(std::tuple<short, short, short> (&colorData)[rows][cols], std::ostrea
 
     for(int i = 0; i < rows; ++i) {
         for(int j = 0; j < cols; ++j) {
-            short color, green, blue;
-            std::tie(color, green, blue) = colorData[i][j];
-            out << color << " " << green << " " << blue << (j == cols - 1 ? "\n" : " ");
+            short color, bezierColor, blue;
+            std::tie(color, bezierColor, blue) = colorData[i][j];
+            out << color << " " << bezierColor << " " << blue << (j == cols - 1 ? "\n" : " ");
         }
     }
 }
@@ -133,16 +133,39 @@ void drawLine(std::tuple<short, short, short> (&colorData)[rows][cols], std::pai
 
 }
 
+/**
+ * Translates every point (x, y) up sinx.
+ * More specifically, sets all (x, y) to the color of (x, y - sinx) - if out of bounds, default black.
+ */
+template<size_t rows, size_t cols>
+void drawQuadraticBeziers(std::tuple<short, short, short> (&colorData)[rows][cols], std::tuple<short, short, short> bezierColor, std::tuple<short, short, short> diagonalColor){
+    for(int i = 0; i < 64; ++i) {
+        // Bezier curves
+        drawLine(colorData, {i * (cols - 1) / 64, 0}, {0, (64 - i) * (rows - 1) / 64}, bezierColor);
+        drawLine(colorData, {i * (cols - 1) / 64, rows - 1}, {0, i * (rows - 1) / 64}, bezierColor);
+        drawLine(colorData, {i * (cols - 1) / 64, 0}, {cols - 1, i * (rows - 1) / 64}, bezierColor);
+        drawLine(colorData, {i * (cols - 1) / 64, rows - 1}, {cols - 1, (64 - i) * (rows - 1) / 64}, bezierColor);
+        // Diagonal lines
+        drawLine(colorData, {i * (cols - 1) / 64, 0}, {0, i * (rows - 1) / 64}, diagonalColor);
+        drawLine(colorData, {i * (cols - 1) / 64, rows - 1}, {cols - 1, i * (rows - 1) / 64}, diagonalColor);
+        drawLine(colorData, {(64 - i) * (cols - 1) / 64, 0}, {cols - 1, i * (rows - 1) / 64}, diagonalColor);
+        drawLine(colorData, {(64 - i) * (cols - 1) / 64, rows - 1}, {0, i * (rows - 1) / 64}, diagonalColor);
+    }
+}
+
 int main() {
     std::ofstream fout("bresenham.ppm");
     const int XRES = 512;
     const int YRES = 512;
-    std::tuple<short, short, short> color = {0, 255, 0};
-
+    const std::tuple<short, short, short> BEZIER_COLOR = {165, 0, 0};
+    const std::tuple<short, short, short> DIAGONAL_COLOR = {80, 0, 0}; 
     std::tuple<short, short, short> image[XRES][YRES];
     
     clear(image);
-    //octants 1 and 5 - green
+
+    drawQuadraticBeziers(image, BEZIER_COLOR, DIAGONAL_COLOR);
+    /* MR DW's TEST
+    //octants 1 and 5 - bezierColor
     drawLine(image, {0, 0}, {XRES-1, YRES-1}, color);
     drawLine(image, {0, 0}, {XRES-1, YRES / 2}, color);
     drawLine(image, {XRES-1, YRES-1}, {0, YRES / 2}, color);
@@ -167,6 +190,7 @@ int main() {
     color = {255, 255, 0};
     drawLine(image, {0, YRES/2}, {XRES-1, YRES/2}, color);
     drawLine(image, {XRES/2, 0}, {XRES/2, YRES-1}, color);
+    */
 
     write(image, fout);
     fout.close();
