@@ -157,14 +157,15 @@ int main() {
     std::ofstream fout("bresenham.ppm");
     const int XRES = 512;
     const int YRES = 512;
+    std::tuple<short, short, short> color = {0, 255, 0};
     const std::tuple<short, short, short> BEZIER_COLOR = {165, 0, 0};
     const std::tuple<short, short, short> DIAGONAL_COLOR = {80, 0, 0}; 
     std::tuple<short, short, short> image[XRES][YRES];
     
     clear(image);
 
-    drawQuadraticBeziers(image, BEZIER_COLOR, DIAGONAL_COLOR);
-    /* MR DW's TEST
+    // drawQuadraticBeziers(image, BEZIER_COLOR, DIAGONAL_COLOR);
+
     //octants 1 and 5 - bezierColor
     drawLine(image, {0, 0}, {XRES-1, YRES-1}, color);
     drawLine(image, {0, 0}, {XRES-1, YRES / 2}, color);
@@ -190,7 +191,6 @@ int main() {
     color = {255, 255, 0};
     drawLine(image, {0, YRES/2}, {XRES-1, YRES/2}, color);
     drawLine(image, {XRES/2, 0}, {XRES/2, YRES-1}, color);
-    */
 
     write(image, fout);
     fout.close();
